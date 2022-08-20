@@ -26,15 +26,26 @@ def download_file(url, dst_path):
 
 
 #テキストファイルからURL一覧読み込み
-f = open('./input/input.txt', 'r')
-URLlist = f.readlines()
+f = open('./input/input.txt', 'r', encoding="UTF-8")
+lines = f.readlines()
 
-print(URLlist)
+#キーワードとURLのリストを取得
+URL_list = []
+keyword_list = []
+for i in range(len(lines)):
+  temp = lines[i].split(",")
+  keyword_list.append(temp[0])
+  URL_list.append(temp[1])
+
+print(keyword_list)
+print(URL_list)
+
+
 #ページURLループ
-for page_url_cnt in range(len(URLlist)):
+for page_url_cnt in range(len(URL_list)):
 
   #ページ指定
-  page_url = URLlist[page_url_cnt]
+  page_url = URL_list[page_url_cnt]
 
   #ページのイメージタグの一覧取得
   r = requests.get(page_url)
@@ -52,12 +63,16 @@ for page_url_cnt in range(len(URLlist)):
 
     str_img_urls_list.append(url)
 
+  #出力フォルダ作成
+  output_dir_path = "./output/" + keyword_list[page_url_cnt].replace(" ", "_")
+  os.makedirs(output_dir_path)
+
   #画像URLループ
   for cnt in range(len(str_img_urls_list)):
     str_img_url = str_img_urls_list[cnt]
     print(str_img_url)
 
     #画像ダウンロード
-    download_file(str_img_url, "./output/" + str(page_url_cnt) + "_" + str(cnt) + ".png")
+    download_file(str_img_url, output_dir_path  + "/" + str(page_url_cnt) + "_" + str(cnt) + ".png")
     time.sleep(1)
 
